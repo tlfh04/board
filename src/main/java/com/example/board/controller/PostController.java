@@ -63,4 +63,22 @@ public class PostController {
         postService.deletePost(id);
         return "redirect:/posts";
     }
+
+    @GetMapping("/test/cache")
+    public String testCache(){
+        postService.testFirstlevelCache();
+        return "redirect:/posts";
+    }
+
+    @GetMapping("/test/write-behind")
+    public String testWriteBehind(){
+        postService.testWriteBehind();
+        return "redirect:/posts";
+    }
+
+    @GetMapping("/test/dirty-checking")
+    public String testDirtyChecking(){
+        postService.testDirtyChecking();
+        return "redirect:/posts";
+    }
 }
