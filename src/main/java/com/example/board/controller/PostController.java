@@ -42,7 +42,24 @@ public class PostController {
         return "redirect:/posts";
     }
 
+    @GetMapping("/{id}/edit")
+    public String edit(@PathVariable Long id, Model model) {
+        PostDto post = postRepository.findById(id);
+        model.addAttribute("post", post);
+        return "posts/form";
+    }
 
+    @PostMapping("/{id}")
+    public String update(@PathVariable Long id,
+                         @ModelAttribute PostDto postDto){
+        postRepository.update(id,postDto);
+        return "redirect:/posts + id";
+    }
 
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id){
+        postRepository.delete(id);
+        return "redirect:/posts";
+    }
 
 }
