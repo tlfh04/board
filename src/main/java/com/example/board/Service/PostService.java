@@ -3,6 +3,9 @@ package com.example.board.Service;
 import com.example.board.entity.Post;
 import com.example.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,5 +84,31 @@ public class PostService {
 
     public List<Post> searchPosts(String keyword){
         return postRepository.findByTitleContaining(keyword);
+    }
+
+    public List<Post> searchPostsByTitleOrContent(String keyword) {
+//        return postRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+//        return postRepository.searchByKeyword(keyword);
+        return postRepository.searchByTitleNative(keyword);
+    }
+
+    public List<Post> getRecentPosts() {
+//        return postRepository.findTop3ByOrderByCreatedAtDesc();
+
+        return postRepository.findRecentPosts(PageRequest.of(0, 3));
+
+//        return postRepository.findRecentPostsNative();
+    }
+
+    public Page<Post> getPostsPage(Pageable pageable) {
+        return postRepository.findAll(pageable);
+    }
+
+    @Transactional
+    public void createDummyPosts(int count) {
+        for (int i = 1; i <= count; i++) {
+            Post post = new Post(i + "번 제목", "게시물내용");
+            postRepository.save(post);
+        }
     }
 }

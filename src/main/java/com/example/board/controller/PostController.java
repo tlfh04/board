@@ -5,6 +5,10 @@ import com.example.board.dto.PostDto;
 import com.example.board.entity.Post;
 import com.example.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +26,22 @@ public class PostController {
 //    }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("posts", postService.getAllPosts());
+    public String list(@PageableDefault(
+                                   size = 20,
+                                   sort = "id",
+                                   direction = Sort.Direction.DESC
+                           ) Pageable pageable,
+                       Model model) {
+        Page<Post> postPage = postService.getPostsPage(pageable);
+
+        int currentPage = pageable.getPageNumber();
+        int totalPages = postPage.getTotalPages();
+        int startPage = Math.max(0,currentPage - 5);
+        int endPage = Math.min(totalPages, currentPage + 5);
+
+        model.addAttribute("postPage", postPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         return "posts/list";
     }
 
@@ -86,8 +104,20 @@ public class PostController {
 
     @GetMapping("/search")
     public String search(@RequestParam String keyword,Model model){
-        List<Post> posts = postService.searchPosts(keyword);
+        List<Post> posts = postService.searchPostsByTitleOrContent(keyword);
         model.addAttribute("posts", posts);
         return "posts/list";
+    }
+
+    @GetMapping("/recent")
+    public String recent(Model model) {
+        model.addAttribute("posts", postService.getRecentPosts());
+        return "posts/list";
+    }
+
+    @GetMapping("/dummy")
+    public String dummy() {
+        postService.createDummyPosts(100);
+        return "redirect:/posts";
     }
 }
