@@ -3,10 +3,7 @@ package com.example.board.Service;
 import com.example.board.entity.Post;
 import com.example.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,5 +107,13 @@ public class PostService {
             Post post = new Post(i + "번 제목", "게시물내용");
             postRepository.save(post);
         }
+    }
+
+    public Page<Post> searchPostsPage(String keyword, Pageable pageable) {
+        return postRepository.findByTitleContaining(keyword, pageable);
+    }
+
+    public Slice<Post> getPostsSlice(Pageable pageable) {
+        return postRepository.findAllBy(pageable);
     }
 }
