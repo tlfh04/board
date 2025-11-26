@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,6 +26,9 @@ public class Post {
     @Column(name = "create_at",updatable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments = new ArrayList<>();
+
     public Post(String title, String content) {
         this.title = title;
         this.content = content;
@@ -34,4 +39,16 @@ public class Post {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setPost(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setPost(null);
+    }
+
+
 }

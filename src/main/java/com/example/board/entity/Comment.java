@@ -16,7 +16,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String comment;
+    private String content;
 
     private LocalDateTime createdAt;
 
@@ -29,8 +29,12 @@ public class Comment {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Comment(Post post, String comment) {
-        this.post = post;
-        this.comment = comment;
+    public Comment(Post post, String content) {
+        // this.post = post;
+        this.content = content;
+        if (post != null) {
+            post.addComment(this);
+        }
     }
+
 }
